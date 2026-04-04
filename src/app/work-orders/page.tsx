@@ -31,8 +31,8 @@ export default function WorkOrdersPage() {
   const fetchData = async () => {
     try {
       const [woRes, alarmRes] = await Promise.all([
-        fetch("http://127.0.0.1:8000/api/work_orders"),
-        fetch("http://127.0.0.1:8000/api/alarms")
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/work_orders`),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/alarms`)
       ]);
       const woData = await woRes.json();
       const alarmData = await alarmRes.json();
@@ -53,7 +53,7 @@ export default function WorkOrdersPage() {
   const handleUpdateStatus = (id: string, currentStatus: string) => {
     const nextStatus = currentStatus === "open" ? "in_progress" : "closed";
     
-    fetch(`http://127.0.0.1:8000/api/work_orders/${id}`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/work_orders/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: nextStatus })
@@ -70,7 +70,7 @@ export default function WorkOrdersPage() {
       instructions: "Investigate and physically splice the severed fiber segment."
     };
     
-    fetch("http://127.0.0.1:8000/api/work_orders", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/work_orders`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)

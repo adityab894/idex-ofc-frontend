@@ -21,7 +21,7 @@ export default function AlarmsPage() {
   const [loading, setLoading] = useState(true);
 
   const fetchAlarms = () => {
-    fetch("http://127.0.0.1:8000/api/alarms")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/alarms`)
       .then((res) => res.json())
       .then((data) => {
         setAlarms(data);
@@ -38,7 +38,7 @@ export default function AlarmsPage() {
   }, []);
 
   const handleAck = (id: string, currentAck: boolean) => {
-    fetch(`http://127.0.0.1:8000/api/alarms/${id}/acknowledge`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/alarms/${id}/acknowledge`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ acknowledged: !currentAck })

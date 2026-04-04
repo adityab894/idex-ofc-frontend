@@ -26,13 +26,14 @@ export default function Home() {
 
   useEffect(() => {
     // Initial fetch
-    fetch("http://127.0.0.1:8000/api/dashboard/stats")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/dashboard/stats`)
       .then((res) => res.json())
       .then((data) => setStats(data))
       .catch((err) => console.error("Error fetching stats:", err));
 
     // Listen to WS for live global dashboard updates
-    const ws = new WebSocket("ws://127.0.0.1:8000/api/ws/alarms");
+    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://127.0.0.1:8000';
+    const ws = new WebSocket(`${wsUrl}/api/ws/alarms`);
     ws.onmessage = (event) => {
       try {
         const payload = JSON.parse(event.data);
@@ -50,7 +51,7 @@ export default function Home() {
           }, ...prev].slice(0, 10)); // Keep last 10
           
           // Re-fetch stats so KPI cards update dynamically!
-          fetch("http://127.0.0.1:8000/api/dashboard/stats")
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/dashboard/stats`)
             .then((res) => res.json())
             .then((data) => setStats(data));
         } else if (payload.type === "FIBER_RESTORED") {
@@ -65,7 +66,7 @@ export default function Home() {
             severity: "healthy"
           }, ...prev].slice(0, 10));
           
-          fetch("http://127.0.0.1:8000/api/dashboard/stats")
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/dashboard/stats`)
             .then((res) => res.json())
             .then((data) => setStats(data));
         }

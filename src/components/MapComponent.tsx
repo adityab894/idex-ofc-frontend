@@ -31,7 +31,7 @@ export default function MapComponent() {
 
   useEffect(() => {
     // Fetch segments from our FastAPI backend
-    fetch("http://127.0.0.1:8000/api/segments")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/segments`)
       .then((res) => res.json())
       .then((data) => {
         setSegments(data);
@@ -43,7 +43,8 @@ export default function MapComponent() {
       });
       
     // Set up WebSocket connection for real-time alarms
-    const ws = new WebSocket("ws://127.0.0.1:8000/api/ws/alarms");
+    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://127.0.0.1:8000';
+    const ws = new WebSocket(`${wsUrl}/api/ws/alarms`);
     
     ws.onmessage = (event) => {
       try {
