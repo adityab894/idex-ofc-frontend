@@ -41,6 +41,36 @@ export default function MapComponent() {
         console.error("Error fetching map segments:", err);
         setLoading(false);
       });
+      
+    // Set up WebSocket connection for real-time alarms
+    const ws = new WebSocket("ws://127.0.0.1:8000/api/ws/alarms");
+    
+    ws.onmessage = (event) => {
+      try {
+        const payload = JSON.parse(event.data);
+        if (payload.type === "FIBER_CUT_ALARM") {
+          const alarmCtx = payload.data;
+          
+          import("sonner").then(({ toast }) => {
+            toast.error(`⚠️ ALARM: ${alarmCtx.message}`, {
+              description: `Location: [${alarmCtx.lat}, ${alarmCtx.lng}] - ${new Date(alarmCtx.timestamp).toLocaleTimeString()}`,
+              duration: 10000,
+            });
+          });
+
+          // Mark segment as cut instantly on map
+          setSegments(prev => prev.map(seg => 
+            seg.id === alarmCtx.segment_id ? { ...seg, status: "cut" } : seg
+          ));
+        }
+      } catch (err) {
+        console.error("Failed to parse WS msg", err);
+      }
+    };
+    
+    return () => {
+      ws.close();
+    }
   }, []);
 
   const getLineColor = (status: Segment["status"]) => {
@@ -73,20 +103,25 @@ export default function MapComponent() {
           (coord) => [coord[1], coord[0]] as [number, number]
         );
 
+        // Making "cut" segment throb or visually thicker
+        const isCut = segment.status === "cut";
+
         return (
           <Polyline
             key={segment.id}
             positions={positions}
             pathOptions={{ 
               color: getLineColor(segment.status), 
-              weight: 5,
-              opacity: 0.8
+              weight: isCut ? 8 : 5,
+              opacity: isCut ? 1 : 0.8,
+              dashArray: isCut ? "10, 10" : undefined
             }}
+            className={isCut ? "animate-pulse shadow-lg" : ""}
           >
             <Tooltip sticky>
               <div className="text-sm">
-                <strong className="block border-b pb-1 mb-1">{segment.name} ({segment.base_code})</strong>
-                <p>Status: <span className="font-semibold uppercase">{segment.status}</span></p>
+                <strong className="block border-b pb-1 mb-1 text-gray-800">{segment.name} ({segment.base_code})</strong>
+                <p>Status: <span className="font-semibold uppercase" style={{ color: getLineColor(segment.status) }}>{segment.status}</span></p>
                 <p>Length: {segment.length_km} km</p>
                 <p>Uptime (30d): {segment.availability_30d_pct}%</p>
               </div>
