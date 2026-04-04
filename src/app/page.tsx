@@ -76,51 +76,54 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col p-8">
+    <div className="min-h-screen bg-slate-950 flex flex-col p-8">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">IAF OFC Command Center</h1>
-        <p className="text-gray-500 mt-2">Centralized Optical Fiber Network Management System</p>
+        <h1 className="text-3xl font-bold tracking-tight text-white">Global Command Dashboard</h1>
+        <p className="text-slate-400 mt-2">Real-time infrastructure topology and fault diagnostics</p>
       </header>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 text-gray-800">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center shadow-lg transition-transform hover:-translate-y-1">
-          <div className="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 text-slate-100">
+        <div className="bg-slate-900/50 rounded-xl border border-slate-800 p-6 flex items-center shadow-lg transition-transform hover:-translate-y-1 hover:border-slate-700 backdrop-blur-md">
+          <div className="p-3 rounded-xl bg-blue-500/10 text-blue-400 mr-4 border border-blue-500/20">
             <Network size={24} />
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Network Segments</p>
+            <p className="text-sm font-medium text-slate-400">Network Segments</p>
             <h3 className="text-2xl font-bold">{stats ? stats.segment_count : '...'}</h3>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center shadow-lg transition-transform hover:-translate-y-1">
-          <div className="p-3 rounded-full bg-red-100 text-red-600 mr-4">
+        <div className="bg-slate-900/50 rounded-xl border border-slate-800 p-6 flex items-center shadow-lg transition-transform hover:-translate-y-1 hover:border-red-900/50 backdrop-blur-md relative overflow-hidden">
+          {stats && stats.active_alarms > 0 && (
+             <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl -mr-10 -mt-10 animate-pulse pointer-events-none" />
+          )}
+          <div className="p-3 rounded-xl bg-red-500/10 text-red-500 mr-4 border border-red-500/20 z-10">
             <AlertTriangle className={stats && stats.active_alarms > 0 ? "animate-pulse" : ""} size={24} />
           </div>
-          <div>
-            <p className="text-sm font-medium text-gray-500">Active Fault Alarms</p>
-            <h3 className="text-2xl font-bold text-red-600">{stats ? stats.active_alarms : '...'}</h3>
+          <div className="z-10">
+            <p className="text-sm font-medium text-slate-400">Active Fault Alarms</p>
+            <h3 className="text-2xl font-bold text-red-400">{stats ? stats.active_alarms : '...'}</h3>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center shadow-lg transition-transform hover:-translate-y-1">
-          <div className="p-3 rounded-full bg-amber-100 text-amber-600 mr-4">
+        <div className="bg-slate-900/50 rounded-xl border border-slate-800 p-6 flex items-center shadow-lg transition-transform hover:-translate-y-1 hover:border-amber-900/50 backdrop-blur-md">
+          <div className="p-3 rounded-xl bg-amber-500/10 text-amber-500 mr-4 border border-amber-500/20">
             <Clock size={24} />
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Open Work Orders</p>
-            <h3 className="text-2xl font-bold text-amber-600">{stats ? stats.open_work_orders : '...'}</h3>
+            <p className="text-sm font-medium text-slate-400">Open Work Orders</p>
+            <h3 className="text-2xl font-bold text-amber-400">{stats ? stats.open_work_orders : '...'}</h3>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center shadow-lg transition-transform hover:-translate-y-1">
-          <div className="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+        <div className="bg-slate-900/50 rounded-xl border border-slate-800 p-6 flex items-center shadow-lg transition-transform hover:-translate-y-1 hover:border-emerald-900/50 backdrop-blur-md">
+          <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 mr-4 border border-emerald-500/20">
             <Activity size={24} />
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Global Uptime (30d)</p>
-            <h3 className="text-2xl font-bold text-green-600">{stats ? stats.avg_availability_30d_pct.toFixed(2) : '...'}%</h3>
+            <p className="text-sm font-medium text-slate-400">Global Uptime (30d)</p>
+            <h3 className="text-2xl font-bold text-emerald-400">{stats ? stats.avg_availability_30d_pct.toFixed(2) : '...'}%</h3>
           </div>
         </div>
       </div>
@@ -128,57 +131,68 @@ export default function Home() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-7xl">
         {/* Main Navigation Modules */}
         <div className="lg:col-span-2">
-          <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Network Operations Modules</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
-            <Link href="/map" className="group bg-white p-6 border rounded-xl hover:border-blue-500 hover:shadow-xl transition-all flex flex-col items-center justify-center min-h-[160px]">
-              <MapIcon size={40} className="mb-4 text-blue-500 group-hover:scale-110 transition-transform" />
-              <span className="font-semibold text-lg text-gray-800">GIS Map</span>
-              <span className="text-sm text-gray-500 text-center mt-1">Live routing & diagnostics</span>
+          <h2 className="text-lg font-bold text-slate-200 mb-4 border-b border-slate-800 pb-2 uppercase tracking-wider text-sm">Target Operations Modules</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+            <Link href="/map" className="group bg-slate-900/60 p-6 border border-slate-800 rounded-xl hover:border-blue-500/50 hover:bg-slate-800/80 transition-all flex flex-col items-center justify-center min-h-[140px] relative overflow-hidden backdrop-blur">
+              <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <MapIcon size={32} className="mb-3 text-blue-400 group-hover:scale-110 transition-transform" />
+              <span className="font-semibold text-slate-200">GIS Core Map</span>
+              <span className="text-xs text-slate-500 text-center mt-1">Live routing & diagnostics</span>
             </Link>
-            <Link href="/alarms" className="group bg-white p-6 border rounded-xl hover:border-blue-500 hover:shadow-xl transition-all flex flex-col items-center justify-center min-h-[160px]">
-              <AlertTriangle size={40} className="mb-4 text-red-500 group-hover:scale-110 transition-transform" />
-              <span className="font-semibold text-lg text-gray-800">Alarm Logs</span>
-              <span className="text-sm text-gray-500 text-center mt-1">Faults & incident history</span>
+            
+            <Link href="/alarms" className="group bg-slate-900/60 p-6 border border-slate-800 rounded-xl hover:border-red-500/50 hover:bg-slate-800/80 transition-all flex flex-col items-center justify-center min-h-[140px] relative overflow-hidden backdrop-blur">
+              <div className="absolute inset-0 bg-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <AlertTriangle size={32} className="mb-3 text-red-500 group-hover:scale-110 transition-transform" />
+              <span className="font-semibold text-slate-200">Incident Logs</span>
+              <span className="text-xs text-slate-500 text-center mt-1">Faults tracking overview</span>
             </Link>
-            <Link href="/work-orders" className="group bg-white p-6 border rounded-xl hover:border-blue-500 hover:shadow-xl transition-all flex flex-col items-center justify-center min-h-[160px]">
-              <HardHat size={40} className="mb-4 text-amber-500 group-hover:scale-110 transition-transform" />
-              <span className="font-semibold text-lg text-gray-800">Dispatch</span>
-              <span className="text-sm text-gray-500 text-center mt-1">Repair team work orders</span>
+            
+            <Link href="/work-orders" className="group bg-slate-900/60 p-6 border border-slate-800 rounded-xl hover:border-amber-500/50 hover:bg-slate-800/80 transition-all flex flex-col items-center justify-center min-h-[140px] relative overflow-hidden backdrop-blur">
+              <div className="absolute inset-0 bg-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <HardHat size={32} className="mb-3 text-amber-500 group-hover:scale-110 transition-transform" />
+              <span className="font-semibold text-slate-200">Unit Dispatch</span>
+              <span className="text-xs text-slate-500 text-center mt-1">Repair team work orders</span>
             </Link>
-            <Link href="/reports" className="group bg-white p-6 border rounded-xl hover:border-blue-500 hover:shadow-xl transition-all flex flex-col items-center justify-center min-h-[160px]">
-              <FileBarChart size={40} className="mb-4 text-emerald-500 group-hover:scale-110 transition-transform" />
-              <span className="font-semibold text-lg text-gray-800">Analytics</span>
-              <span className="text-sm text-gray-500 text-center mt-1">Availability & MTTR reports</span>
+            
+            <Link href="/reports" className="group bg-slate-900/60 p-6 border border-slate-800 rounded-xl hover:border-emerald-500/50 hover:bg-slate-800/80 transition-all flex flex-col items-center justify-center min-h-[140px] relative overflow-hidden backdrop-blur">
+              <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <FileBarChart size={32} className="mb-3 text-emerald-400 group-hover:scale-110 transition-transform" />
+              <span className="font-semibold text-slate-200">Intelligence Reports</span>
+              <span className="text-xs text-slate-500 text-center mt-1">Availability & MTTR analytics</span>
             </Link>
           </div>
         </div>
 
         {/* Live Event Feed Widget */}
-        <div className="bg-white rounded-xl shadow border border-gray-200 flex flex-col overflow-hidden">
-          <div className="bg-slate-800 text-white p-4 flex items-center justify-between border-b border-gray-200">
-            <div className="flex items-center gap-2">
-              <Terminal size={18} />
-              <h2 className="font-bold">Live System Logs</h2>
+        <div className="bg-black/60 rounded-xl border border-slate-800 flex flex-col overflow-hidden backdrop-blur-xl shadow-2xl">
+          <div className="bg-slate-900 border-b border-slate-800 p-3 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-slate-300">
+              <Terminal size={14} />
+              <h2 className="font-bold text-xs uppercase tracking-widest">Live Node Comms</h2>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+            <div className="flex items-center gap-2 bg-slate-950 px-2 py-1 rounded border border-slate-800">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <span className="text-xs font-semibold text-green-400">Listening WS</span>
+              <span className="text-[10px] uppercase font-bold text-emerald-400/80 tracking-wider">WS Linked</span>
             </div>
           </div>
-          <div className="p-4 flex-1 overflow-y-auto max-h-[350px] bg-slate-900 font-mono text-sm">
+          
+          <div className="p-4 flex-1 overflow-y-auto max-h-[300px] font-mono text-xs">
             {events.length === 0 ? (
-              <div className="text-slate-500 italic text-center mt-10">Awaiting network streams...</div>
+              <div className="text-slate-600 italic text-center mt-10 whitespace-pre">
+                {`[ SYSTEM NOMINAL ]\n\nAwaiting network streams...`}
+              </div>
             ) : (
-              <ul className="space-y-3">
+              <ul className="space-y-4">
                 {events.map(ev => {
                   const isHealthy = ev.severity === "healthy";
                   return (
-                    <li key={ev.id} className={`border-l-2 pl-3 ${isHealthy ? 'border-green-500' : 'border-red-500'}`}>
-                      <span className={`block text-xs mb-1 ${isHealthy ? 'text-green-400' : 'text-red-400'}`}>{ev.time}</span>
-                      <span className="text-gray-200">{ev.message}</span>
+                    <li key={ev.id} className={`border-l pl-3 relative ${isHealthy ? 'border-emerald-500/50' : 'border-red-500/50'}`}>
+                      <div className={`absolute -left-[5px] top-1 w-2 h-2 rounded-full ${isHealthy ? 'bg-emerald-500/50' : 'bg-red-500/50'}`} />
+                      <span className={`block text-[10px] mb-1 font-bold tracking-widest uppercase ${isHealthy ? 'text-emerald-500' : 'text-red-500'}`}>{ev.time}</span>
+                      <span className="text-slate-300 leading-relaxed text-[11px]">{ev.message}</span>
                     </li>
                   );
                 })}

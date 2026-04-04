@@ -46,73 +46,73 @@ export default function AlarmsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white shadow-sm border-b px-8 py-6 relative">
+    <div className="min-h-screen bg-slate-950 flex flex-col">
+      <header className="bg-slate-900 shadow-sm border-b border-slate-800 px-8 py-6 relative">
         <div className="absolute left-8 top-1/2 -translate-y-1/2">
-          <Link href="/" className="flex items-center text-gray-500 hover:text-red-600 transition-colors">
+          <Link href="/" className="flex items-center text-slate-400 hover:text-red-500 transition-colors">
             <ChevronLeft size={20} />
-            <span className="font-medium ml-1">Dashboard</span>
+            <span className="font-medium ml-1 text-sm tracking-wide">RETURN</span>
           </Link>
         </div>
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 flex justify-center items-center gap-2">
+          <h1 className="text-2xl font-bold text-slate-100 flex justify-center items-center gap-2">
             <ShieldAlert className="text-red-500" />
-            Alarm Processing Center
+            INCIDENT PROTOCOL CENTER
           </h1>
-          <p className="text-sm text-gray-500 mt-1">Review and acknowledge network incident logs</p>
+          <p className="text-sm text-slate-500 mt-1 uppercase tracking-widest text-[10px]">Review and acknowledge network incident logs</p>
         </div>
       </header>
 
       <main className="flex-1 p-8 w-full max-w-5xl mx-auto">
-        <div className="bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
+        <div className="bg-slate-900/50 rounded-xl shadow border border-slate-800 overflow-hidden backdrop-blur-md">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-gray-200 text-slate-500 text-xs uppercase font-semibold">
-                <th className="p-4 w-12">#</th>
-                <th className="p-4">Time</th>
+              <tr className="bg-slate-900 border-b border-slate-800 text-slate-400 text-[11px] uppercase tracking-wider font-semibold">
+                <th className="p-4 w-12 text-center">#</th>
+                <th className="p-4">Timestamp</th>
                 <th className="p-4">Severity</th>
-                <th className="p-4">Message / Location</th>
-                <th className="p-4 text-right">Action</th>
+                <th className="p-4">Incident Coordinates / Message</th>
+                <th className="p-4 text-right">Action Protocol</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-slate-800/50">
               {loading ? (
-                <tr><td colSpan={5} className="p-8 text-center text-gray-500">Loading alarms...</td></tr>
+                <tr><td colSpan={5} className="p-8 text-center text-slate-500 font-mono text-sm">Scanning logs...</td></tr>
               ) : alarms.length === 0 ? (
-                <tr><td colSpan={5} className="p-12 text-center text-gray-500 border-dashed border-2 m-4 rounded-xl">👍 No alarms in the system. Network is nominal.</td></tr>
+                <tr><td colSpan={5} className="p-12 text-center text-emerald-500/50 border-dashed border border-emerald-500/20 bg-emerald-500/5 m-4 rounded-xl text-sm font-mono tracking-widest">[ NETWORK SECURE : NO INCIDENTS ]</td></tr>
               ) : (
                 alarms.map((al, idx) => (
-                  <tr key={al.id} className={`transition-colors ${al.acknowledged ? 'bg-white opacity-60' : 'bg-red-50/30'}`}>
-                    <td className="p-4 text-gray-400 font-mono text-sm">{idx + 1}</td>
-                    <td className="p-4 text-sm text-gray-600 whitespace-nowrap">
+                  <tr key={al.id} className={`transition-all ${al.acknowledged ? 'bg-slate-900/30 opacity-50 grayscale' : 'bg-red-500/5 hover:bg-red-500/10'}`}>
+                    <td className="p-4 text-slate-500 font-mono text-xs text-center">{String(idx + 1).padStart(2, '0')}</td>
+                    <td className="p-4 text-xs font-mono text-slate-300 whitespace-nowrap">
                       {new Date(al.created_at).toLocaleString()}
                     </td>
                     <td className="p-4">
-                      <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${al.severity === 'critical' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest border ${al.severity === 'critical' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>
                         {al.severity}
                       </span>
                     </td>
                     <td className="p-4">
-                      <div className="font-medium text-gray-900 border-l-2 border-red-500 pl-2">
+                      <div className="font-medium text-slate-200 border-l-2 border-red-500 pl-3 py-1">
                         {al.message}
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1 pl-2 font-mono">
-                        GEO: [{al.lat.toFixed(4)}, {al.lng.toFixed(4)}]
+                        <div className="text-[10px] text-slate-500 mt-1 font-mono tracking-wider">
+                          LAT: {al.lat.toFixed(4)} | LNG: {al.lng.toFixed(4)}
+                        </div>
                       </div>
                     </td>
                     <td className="p-4 text-right">
                       <button 
                         onClick={() => handleAck(al.id, al.acknowledged)}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold tracking-widest uppercase transition-all border ${
                           al.acknowledged 
-                            ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                            : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm'
+                            ? 'bg-slate-800 text-slate-500 border-slate-700 hover:bg-slate-700'
+                            : 'bg-red-500/20 text-red-400 border-red-500/50 hover:bg-red-500 hover:text-white shadow-[0_0_15px_rgba(239,68,68,0.2)]'
                         }`}
                       >
                         {al.acknowledged ? (
-                          <><span>Acknowledged</span></>
+                          <><span>VERIFIED</span></>
                         ) : (
-                          <><CheckCircle size={16} /><span>Acknowledge</span></>
+                          <><CheckCircle size={14} /><span>ACKNOWLEDGE</span></>
                         )}
                       </button>
                     </td>
