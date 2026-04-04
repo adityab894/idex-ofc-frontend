@@ -62,6 +62,19 @@ export default function MapComponent() {
           setSegments(prev => prev.map(seg => 
             seg.id === alarmCtx.segment_id ? { ...seg, status: "cut" } : seg
           ));
+        } else if (payload.type === "FIBER_RESTORED") {
+          const restCtx = payload.data;
+
+          import("sonner").then(({ toast }) => {
+            toast.success(`✅ NETWORK HEALED: ${restCtx.message}`, {
+              duration: 8000,
+            });
+          });
+
+          // Mark segment back to healthy instantly on map
+          setSegments(prev => prev.map(seg => 
+            seg.id === restCtx.segment_id ? { ...seg, status: "healthy" } : seg
+          ));
         }
       } catch (err) {
         console.error("Failed to parse WS msg", err);

@@ -53,6 +53,21 @@ export default function Home() {
           fetch("http://127.0.0.1:8000/api/dashboard/stats")
             .then((res) => res.json())
             .then((data) => setStats(data));
+        } else if (payload.type === "FIBER_RESTORED") {
+          const restCtx = payload.data;
+          
+          toast.success(`✅ RESTORED: ${restCtx.message}`);
+          
+          setEvents(prev => [{
+            id: Math.random().toString(),
+            time: new Date().toLocaleTimeString(),
+            message: `Segment ${restCtx.segment_id.split("-")[0]} - ${restCtx.message}`,
+            severity: "healthy"
+          }, ...prev].slice(0, 10));
+          
+          fetch("http://127.0.0.1:8000/api/dashboard/stats")
+            .then((res) => res.json())
+            .then((data) => setStats(data));
         }
       } catch (err) {}
     };
@@ -158,12 +173,15 @@ export default function Home() {
               <div className="text-slate-500 italic text-center mt-10">Awaiting network streams...</div>
             ) : (
               <ul className="space-y-3">
-                {events.map(ev => (
-                  <li key={ev.id} className="border-l-2 border-red-500 pl-3">
-                    <span className="text-red-400 block text-xs mb-1">{ev.time}</span>
-                    <span className="text-gray-200">{ev.message}</span>
-                  </li>
-                ))}
+                {events.map(ev => {
+                  const isHealthy = ev.severity === "healthy";
+                  return (
+                    <li key={ev.id} className={`border-l-2 pl-3 ${isHealthy ? 'border-green-500' : 'border-red-500'}`}>
+                      <span className={`block text-xs mb-1 ${isHealthy ? 'text-green-400' : 'text-red-400'}`}>{ev.time}</span>
+                      <span className="text-gray-200">{ev.message}</span>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
