@@ -5,7 +5,8 @@ import { useEffect, useState, useRef } from "react";
 import {
   Activity, AlertTriangle, Clock, Map as MapIcon,
   Network, FileBarChart, HardHat, Terminal, Shield,
-  Wifi, WifiOff, ChevronRight, Zap
+  Wifi, WifiOff, ChevronRight, Zap, Radio, ArrowRight,
+  Globe, Lock
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -47,7 +48,152 @@ function AnimatedCounter({ value, suffix = "" }: { value: number | null; suffix?
   return <span>{typeof value === "number" && !Number.isInteger(value) ? value.toFixed(2) : display}{suffix}</span>;
 }
 
-export default function Home() {
+/* ─── Animated scanline background dots ─── */
+function NeuralGrid() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {/* Base grid */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(16,185,129,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.04) 1px, transparent 1px)",
+          backgroundSize: "60px 60px",
+        }}
+      />
+      {/* Glow orbs */}
+      <div className="absolute top-[-15%] left-[-5%] w-[700px] h-[700px] bg-emerald-500/6 rounded-full blur-[140px]" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-blue-500/6 rounded-full blur-[140px]" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[400px] bg-indigo-500/4 rounded-full blur-[160px]" />
+      {/* Scanline */}
+      <div
+        className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent"
+        style={{ animation: "scanline 6s linear infinite", top: 0 }}
+      />
+    </div>
+  );
+}
+
+/* ─── LANDING HERO ─── */
+function LandingPage({ onExplore }: { onExplore: () => void }) {
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setTick((x) => x + 1), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const stats = [
+    { label: "OFC Segments", value: "10", icon: Network, color: "blue" },
+    { label: "Active Alarms", value: "5", icon: AlertTriangle, color: "red" },
+    { label: "Network Uptime", value: "98.3%", icon: Activity, color: "emerald" },
+    { label: "Coverage (km)", value: "2,341", icon: Globe, color: "indigo" },
+  ];
+
+  return (
+    <div className="relative min-h-screen bg-[#050814] text-slate-100 flex flex-col overflow-hidden">
+      <NeuralGrid />
+
+      {/* Top nav bar */}
+      <nav className="relative z-10 flex items-center justify-between px-8 py-5 border-b border-slate-800/50">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-6 bg-emerald-400 rounded-full" />
+            <div className="w-1.5 h-4 bg-emerald-400/50 rounded-full" />
+            <div className="w-1 h-2 bg-emerald-400/20 rounded-full" />
+          </div>
+          <div>
+            <p className="text-[10px] font-mono tracking-[0.3em] text-emerald-400/70 uppercase leading-none">Indian Air Force</p>
+            <p className="text-[11px] font-bold text-slate-300 tracking-wider">OFC NMS · v1.0</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 text-[10px] font-mono tracking-widest text-emerald-400/60 uppercase">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          System Online
+        </div>
+      </nav>
+
+      {/* Hero content */}
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-16 text-center">
+
+        {/* Classification badge */}
+        <div className="flex items-center gap-2 mb-8 px-4 py-2 rounded-full border border-amber-500/30 bg-amber-500/5 backdrop-blur-sm">
+          <Lock size={11} className="text-amber-400" />
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-400">Restricted · Authorised Personnel Only</span>
+        </div>
+
+        {/* Main title */}
+        <h1 className="text-5xl sm:text-7xl font-black tracking-tight mb-4 leading-none">
+          <span className="bg-gradient-to-r from-white via-slate-200 to-slate-500 bg-clip-text text-transparent">
+            Global Command
+          </span>
+          <br />
+          <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-blue-400 bg-clip-text text-transparent">
+            Center
+          </span>
+        </h1>
+
+        <p className="max-w-xl text-slate-400 text-base sm:text-lg mb-4 leading-relaxed font-light">
+          Indigenous Optical Fibre Network Management System — real-time monitoring,
+          fault detection & repair dispatch for defence communications infrastructure.
+        </p>
+
+        {/* Tick indicator */}
+        <div className="flex items-center gap-2 mb-12 text-[11px] font-mono text-slate-600 uppercase tracking-widest">
+          <Radio size={11} className="text-emerald-500 animate-pulse" />
+          Transmitting · uptime {String(Math.floor(tick / 3600)).padStart(2, "0")}:{String(Math.floor((tick % 3600) / 60)).padStart(2, "0")}:{String(tick % 60).padStart(2, "0")}
+        </div>
+
+        {/* Explore CTA */}
+        <button
+          onClick={onExplore}
+          className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm uppercase tracking-widest transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-emerald-500/40 mb-16"
+        >
+          <span>Explore Network</span>
+          <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          {/* Glow ring */}
+          <div className="absolute inset-0 rounded-2xl ring-2 ring-emerald-400/0 group-hover:ring-emerald-400/40 transition-all" />
+        </button>
+
+        {/* Mini stat strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl">
+          {stats.map(({ label, value, icon: Icon, color }) => {
+            const colors: Record<string, string> = {
+              blue: "border-blue-500/20 bg-blue-500/5 text-blue-400",
+              red: "border-red-500/20 bg-red-500/5 text-red-400",
+              emerald: "border-emerald-500/20 bg-emerald-500/5 text-emerald-400",
+              indigo: "border-indigo-500/20 bg-indigo-500/5 text-indigo-400",
+            };
+            return (
+              <div key={label} className={`flex flex-col items-center gap-1.5 p-4 rounded-2xl border backdrop-blur-sm ${colors[color]}`}>
+                <Icon size={16} />
+                <span className="text-xl font-black text-white">{value}</span>
+                <span className="text-[10px] uppercase tracking-widest opacity-60">{label}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="relative z-10 px-8 py-4 border-t border-slate-800/50 flex items-center justify-between text-[10px] font-mono text-slate-700 uppercase tracking-widest">
+        <span>IAF · DRDO · MoD · HackByte 2025</span>
+        <span>Indigenous OFC NMS · Built in India</span>
+      </div>
+
+      <style>{`
+        @keyframes scanline {
+          0%   { top: -2px; opacity:0; }
+          10%  { opacity: 1; }
+          90%  { opacity: 1; }
+          100% { top: 100%; opacity: 0; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+/* ─── DASHBOARD ─── */
+function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [events, setEvents] = useState<FeedEvent[]>([]);
   const [wsConnected, setWsConnected] = useState(false);
@@ -93,10 +239,10 @@ export default function Home() {
   }, [events]);
 
   const modules = [
-    { href: "/map", icon: MapIcon, label: "GIS Core Map", sub: "Live fiber topology", color: "blue", glow: "shadow-blue-500/20" },
-    { href: "/alarms", icon: AlertTriangle, label: "Incident Logs", sub: "Fault & alarm records", color: "red", glow: "shadow-red-500/20" },
-    { href: "/work-orders", icon: HardHat, label: "Unit Dispatch", sub: "Repair team tickets", color: "amber", glow: "shadow-amber-500/20" },
-    { href: "/reports", icon: FileBarChart, label: "Intel Reports", sub: "Uptime & MTTR data", color: "emerald", glow: "shadow-emerald-500/20" },
+    { href: "/map", icon: MapIcon, label: "GIS Core Map", sub: "Live fiber topology", color: "blue" },
+    { href: "/alarms", icon: AlertTriangle, label: "Incident Logs", sub: "Fault & alarm records", color: "red" },
+    { href: "/work-orders", icon: HardHat, label: "Unit Dispatch", sub: "Repair team tickets", color: "amber" },
+    { href: "/reports", icon: FileBarChart, label: "Intel Reports", sub: "Uptime & MTTR data", color: "emerald" },
   ];
 
   const colorMap: Record<string, { border: string; text: string; bg: string; iconBg: string; ring: string }> = {
@@ -108,8 +254,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#050814] text-slate-100 relative overflow-hidden">
-
-      {/* Background grid + glow orbs */}
+      {/* Background */}
       <div className="pointer-events-none fixed inset-0 z-0">
         <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(rgba(16,185,129,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.03) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
         <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[120px]" />
@@ -150,89 +295,65 @@ export default function Home() {
         {/* ── KPI CARDS ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
 
-          {/* Segments */}
           <div className="relative bg-slate-900/40 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-xl overflow-hidden group hover:border-blue-500/40 transition-all">
             <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-all" />
             <div className="flex items-center justify-between mb-4">
-              <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                <Network size={18} className="text-blue-400" />
-              </div>
+              <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20"><Network size={18} className="text-blue-400" /></div>
               <Shield size={12} className="text-slate-600" />
             </div>
-            <div className="text-3xl font-black text-white mb-1">
-              <AnimatedCounter value={stats?.segment_count ?? null} />
-            </div>
+            <div className="text-3xl font-black text-white mb-1"><AnimatedCounter value={stats?.segment_count ?? null} /></div>
             <p className="text-[11px] text-slate-500 uppercase tracking-widest font-medium">OFC Segments</p>
             <div className="mt-3 h-0.5 w-full bg-slate-800 rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full" style={{ width: "100%" }} />
             </div>
           </div>
 
-          {/* Alarms */}
           <div className={`relative bg-slate-900/40 border rounded-2xl p-5 backdrop-blur-xl overflow-hidden group transition-all ${stats && stats.active_alarms > 0 ? "border-red-500/40 ring-1 ring-red-500/20" : "border-slate-800/80 hover:border-red-500/30"}`}>
-            {stats && stats.active_alarms > 0 && (
-              <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent" />
-            )}
+            {stats && stats.active_alarms > 0 && <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent" />}
             <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/5 rounded-full blur-2xl group-hover:bg-red-500/10 transition-all" />
             <div className="flex items-center justify-between mb-4">
-              <div className={`p-2 rounded-xl bg-red-500/10 border border-red-500/20 ${stats && stats.active_alarms > 0 ? "animate-pulse" : ""}`}>
-                <AlertTriangle size={18} className="text-red-400" />
-              </div>
-              {stats && stats.active_alarms > 0 && (
-                <span className="text-[9px] bg-red-500 text-white font-black px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse">LIVE</span>
-              )}
+              <div className={`p-2 rounded-xl bg-red-500/10 border border-red-500/20 ${stats && stats.active_alarms > 0 ? "animate-pulse" : ""}`}><AlertTriangle size={18} className="text-red-400" /></div>
+              {stats && stats.active_alarms > 0 && <span className="text-[9px] bg-red-500 text-white font-black px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse">LIVE</span>}
             </div>
-            <div className={`text-3xl font-black mb-1 ${stats && stats.active_alarms > 0 ? "text-red-400" : "text-white"}`}>
-              <AnimatedCounter value={stats?.active_alarms ?? null} />
-            </div>
+            <div className={`text-3xl font-black mb-1 ${stats && stats.active_alarms > 0 ? "text-red-400" : "text-white"}`}><AnimatedCounter value={stats?.active_alarms ?? null} /></div>
             <p className="text-[11px] text-slate-500 uppercase tracking-widest font-medium">Active Alarms</p>
             <div className="mt-3 h-0.5 w-full bg-slate-800 rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full transition-all" style={{ width: stats ? `${Math.min((stats.active_alarms / 10) * 100, 100)}%` : "0%" }} />
             </div>
           </div>
 
-          {/* Work Orders */}
           <div className="relative bg-slate-900/40 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-xl overflow-hidden group hover:border-amber-500/40 transition-all">
             <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl group-hover:bg-amber-500/10 transition-all" />
             <div className="flex items-center justify-between mb-4">
-              <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                <Clock size={18} className="text-amber-400" />
-              </div>
+              <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20"><Clock size={18} className="text-amber-400" /></div>
               <Zap size={12} className="text-slate-600" />
             </div>
-            <div className="text-3xl font-black text-white mb-1">
-              <AnimatedCounter value={stats?.open_work_orders ?? null} />
-            </div>
+            <div className="text-3xl font-black text-white mb-1"><AnimatedCounter value={stats?.open_work_orders ?? null} /></div>
             <p className="text-[11px] text-slate-500 uppercase tracking-widest font-medium">Open Tickets</p>
             <div className="mt-3 h-0.5 w-full bg-slate-800 rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-full" style={{ width: stats ? `${Math.min((stats.open_work_orders / 5) * 100, 100)}%` : "0%" }} />
             </div>
           </div>
 
-          {/* Uptime */}
           <div className="relative bg-slate-900/40 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-xl overflow-hidden group hover:border-emerald-500/40 transition-all">
             <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-all" />
             <div className="flex items-center justify-between mb-4">
-              <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                <Activity size={18} className="text-emerald-400" />
-              </div>
+              <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20"><Activity size={18} className="text-emerald-400" /></div>
               <span className="text-[9px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-bold px-2 py-0.5 rounded-full uppercase tracking-widest">30d</span>
             </div>
             <div className="text-3xl font-black text-emerald-400 mb-1">
-              {stats ? `${stats.avg_availability_30d_pct.toFixed(1)}%` : <span className="animate-pulse text-white">--</span>}
+              {stats ? `${stats.avg_availability_30d_pct?.toFixed(1) ?? "99.9"}%` : <span className="animate-pulse text-white">--</span>}
             </div>
             <p className="text-[11px] text-slate-500 uppercase tracking-widest font-medium">Network Uptime</p>
             <div className="mt-3 h-0.5 w-full bg-slate-800 rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full" style={{ width: stats ? `${stats.avg_availability_30d_pct}%` : "0%" }} />
             </div>
           </div>
-
         </div>
 
         {/* ── BOTTOM SECTION ── */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
-          {/* Module Grid — 3 cols */}
           <div className="lg:col-span-3 flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h2 className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Operations Modules</h2>
@@ -242,15 +363,9 @@ export default function Home() {
               {modules.map(({ href, icon: Icon, label, sub, color }) => {
                 const c = colorMap[color];
                 return (
-                  <Link
-                    key={href}
-                    href={href}
-                    className={`group relative bg-slate-900/40 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-xl transition-all duration-300 overflow-hidden ${c.border} ${c.bg} hover:shadow-xl ${c.ring} hover:-translate-y-0.5`}
-                  >
-                    <div className={`absolute top-0 right-0 w-32 h-32 opacity-0 group-hover:opacity-100 transition-opacity rounded-full blur-3xl -mr-10 -mt-10 ${color === 'blue' ? 'bg-blue-500/10' : color === 'red' ? 'bg-red-500/10' : color === 'amber' ? 'bg-amber-500/10' : 'bg-emerald-500/10'}`} />
-                    <div className={`inline-flex p-3 rounded-xl border mb-4 ${c.iconBg}`}>
-                      <Icon size={20} className={c.text} />
-                    </div>
+                  <Link key={href} href={href} className={`group relative bg-slate-900/40 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-xl transition-all duration-300 overflow-hidden ${c.border} ${c.bg} hover:shadow-xl ${c.ring} hover:-translate-y-0.5`}>
+                    <div className={`absolute top-0 right-0 w-32 h-32 opacity-0 group-hover:opacity-100 transition-opacity rounded-full blur-3xl -mr-10 -mt-10 ${color === "blue" ? "bg-blue-500/10" : color === "red" ? "bg-red-500/10" : color === "amber" ? "bg-amber-500/10" : "bg-emerald-500/10"}`} />
+                    <div className={`inline-flex p-3 rounded-xl border mb-4 ${c.iconBg}`}><Icon size={20} className={c.text} /></div>
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="font-bold text-slate-200 text-sm">{label}</p>
@@ -263,7 +378,6 @@ export default function Home() {
               })}
             </div>
 
-            {/* System Status Bar */}
             <div className="mt-1 bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 backdrop-blur-xl flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50 animate-pulse" />
@@ -280,9 +394,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Live Feed — 2 cols */}
           <div className="lg:col-span-2 flex flex-col bg-slate-900/40 border border-slate-800/80 rounded-2xl backdrop-blur-xl overflow-hidden">
-            {/* Feed header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800/80 bg-slate-900/60">
               <div className="flex items-center gap-2">
                 <Terminal size={13} className="text-slate-400" />
@@ -294,7 +406,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Feed body */}
             <div ref={feedRef} className="flex-1 overflow-y-auto p-4 space-y-3 max-h-[340px] scrollbar-thin">
               {events.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-40 gap-3">
@@ -324,7 +435,6 @@ export default function Home() {
               )}
             </div>
 
-            {/* Feed footer */}
             <div className="px-5 py-3 border-t border-slate-800/80 bg-slate-900/60 flex items-center justify-between">
               <span className="text-[10px] font-mono text-slate-600">{events.length} event{events.length !== 1 ? "s" : ""} logged</span>
               <span className="text-[10px] font-mono text-slate-600">RETAINING LAST 15</span>
@@ -333,6 +443,35 @@ export default function Home() {
 
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ─── ROOT: landing → dashboard with fade transition ─── */
+export default function Home() {
+  const [view, setView] = useState<"landing" | "dashboard">("landing");
+  const [fading, setFading] = useState(false);
+
+  const handleExplore = () => {
+    setFading(true);
+    setTimeout(() => {
+      setView("dashboard");
+      setFading(false);
+    }, 500);
+  };
+
+  return (
+    <div
+      style={{
+        transition: "opacity 0.5s ease",
+        opacity: fading ? 0 : 1,
+      }}
+    >
+      {view === "landing" ? (
+        <LandingPage onExplore={handleExplore} />
+      ) : (
+        <Dashboard />
+      )}
     </div>
   );
 }
